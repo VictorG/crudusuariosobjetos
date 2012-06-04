@@ -5,7 +5,8 @@ $config=array(
     "controllers"   => "../application/controllers",
     "views"         => "../application/views",
     "models"         => "../application/model",
-    "helpers"       => "/../application/views/helpers",    
+    "helpers"       => "/../application/views/helpers",   
+	"libs"        	=> "/../libs", 
     
     "styles"        => "/styles",           // Styles directory
     "layouts"       => "/layouts",          // Layouts directory
@@ -14,10 +15,12 @@ $config=array(
     "usersUploadDirectory"  => "/uploads/users",
     
     /* -------- Database ------------------ */    
-    "host"          => "localhost",
-    "userdb"        => "root",
-    "passdb"        => "",
-    "db"            => "usuarios"    
+    "db"=>array(
+			"host"          => "localhost",
+		    "userdb"        => "root",
+		    "passdb"        => "",
+		    "db"            => "usuarios"
+    )    
 );
 
 ?>
