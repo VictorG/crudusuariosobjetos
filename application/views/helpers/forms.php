@@ -3,10 +3,10 @@
  * 
  */
 
-function htmlSelectFromDB($name, $idRow, $nameRow, $result, $datos)
+function htmlSelectFromDB($name, $idRow, $nameRow, $result, $datos, $db)
 {
     $html="<select name=\"".$name."\">";
-    while ($row = arrayAssoc($result)) 
+    while ($row = $db->arrayAssoc($result)) 
     {
         if($datos[$name]==$row[$idRow])
             $select ='selected';
@@ -20,11 +20,11 @@ function htmlSelectFromDB($name, $idRow, $nameRow, $result, $datos)
     return $html;
 }
 
-function htmlSelectMultipleFromDB($name, $idRow, $nameRow, $result, $datos)
+function htmlSelectMultipleFromDB($name, $idRow, $nameRow, $result, $datos, $db)
 {
     $html="<select multiple name=\"".$name."[]\">";
     $dato=explode(',',$datos[$name]);
-    while ($row = arrayAssoc($result)) 
+    while ($row = $db->arrayAssoc($result)) 
     {
         if(in_array($row[$idRow],$dato))
             $select ='selected';
@@ -38,10 +38,10 @@ function htmlSelectMultipleFromDB($name, $idRow, $nameRow, $result, $datos)
     $html.="</select>";
     return $html;
 }
-function htmlRadioFromDB($name, $idRow, $nameRow, $result, $datos)
+function htmlRadioFromDB($name, $idRow, $nameRow, $result, $datos, $db)
 {   
     $html='';
-    while ($row = arrayAssoc($result)) 
+    while ($row = $db->arrayAssoc($result)) 
     {
         if($datos[$name]==$row[$idRow])
             $html.=$row[$nameRow].": <input type=\"radio\" 
@@ -54,11 +54,11 @@ function htmlRadioFromDB($name, $idRow, $nameRow, $result, $datos)
     }
     return $html;
 }
-function htmlCheckboxFromDB($name, $idRow, $nameRow, $result, $datos)
+function htmlCheckboxFromDB($name, $idRow, $nameRow, $result, $datos, $db)
 {
     $html='';
     $dato=explode(',',$datos[$name]);
-    while ($row = arrayAssoc($result)) 
+    while ($row = $db->arrayAssoc($result)) 
     {
         if(in_array($row[$idRow],$dato))
             $html.=$row[$nameRow].": <input type=\"checkbox\" 

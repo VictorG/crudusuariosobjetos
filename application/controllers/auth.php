@@ -1,79 +1,89 @@
 <?php
 /**
- * Usuarios controller
+ * Auth controller
  *
- * Controller for application usuarios.
+ * Controller for authentication.
  * 
  * @uses       none
- * @package    Usuarios
+ * @package    Auth
  * @subpackage Controller
  */
-
-
-/**
- * Settings iniciales 
- */
-
-/**
- * Debugs 
- */
-echo "<pre>Files: ";
-print_r($_FILES);
-echo "</pre>";
-
 /**
  * Incluir librerias 
  */
-require_once ($config['models']."/usuarios.php");
+require_once ($_SESSION['config']['models']."/auth.php");
 
-/**
- * Inicializacion de variables 
- */
-
-$usuario='';
-$content='';
-
-// Controller
-if(isset($_GET['controller']))
-    $controller=$_GET['controller'];
-else
-    $controller='auth';
-
-// Action
-if(isset($_GET['action']))
-    $action=$_GET['action'];
-else
-    $action='login';
-       
-
-/**
- * Parametrizar 
- */
-
-/**
- * Procesar 
- */
-$link=connectDBServer($config);
-
-switch($action)
+class authController
 {
-    case 'login':
-        ob_start();
-        include ("formulario_login.php"); 
-        $content = ob_get_contents();
-        ob_end_clean();
-    break;
-    case 'logout':
-        echo "<pre>";
-        print_r("esto es el logout");
-        echo "<pre>";
-    break;    
-    default:           
-    break;
+	public $db='';
+	public $usuario='';
+	public $content='';
+	public $route=''; 
+	public $datos='';
+	public $viewVar='';
+	
+	public function __construct()
+	{
+		$this -> db = new dbConnect($_SESSION['config']['db']);
+		$obj = mvc::getInstance();
+// 		$this -> route = $obj->setRoute('usuarios', 'select');
+		$this -> route = $obj->getRoute();	
+		$this -> _init();		
+		return;
+	}
+	
+	public function __destruct()
+	{
+		
+// 		echo $this->render();
+// 		echo "caca";
+	}
+	
+	/**
+	 * Inicializacion de variables
+	 */
+	protected function _init()
+	{
+		$this->datos = authModel::initUserData();
+		$this->{$this->route['action']."Action"}();
+		echo $this->render();
+		return;
+	}
+	
+	public function loginAction()
+	{
+		if (isset($_POST['password']))
+		{
+			// Procesar formulario de insert
+			$usuario=authModel::procesar($this->db);
+			
+			// Esta logueado
+			if(isset($_SESSION[sessionIdUsuario]))
+				header("Location: ?controller=usuarios&action=select");
+			// No esta logueado
+			else
+				header("Location: ?controller=auth&action=login");
+			
+			
+		}
+		else
+		{
+			//Mostrar formulario
+			$this->viewVar=array('usuario'=>'','datos'=>$this->datos,'db'=>$this->db,'helper'=>$_SESSION['config']['helpers']);
+		}
+	}
+	
+	/**
+	 * Mostrar
+	 */	
+	public function render()
+	{
+		$content=views::view($this->viewVar, $_SESSION['config']['views'].'/'.$this->route['controller'].'/'.$this->route['action'].'.phtml');
+		$this->db->disconnectDBServer();
+		return $content;
+	}
 }
-$content=view($viewVar, $config['views'].'/'.$controller.'/'.$action.'.phtml');
-disconnectDBServer($link);
-/**
- * Mostrar 
- */
+
+
+
 ?>

@@ -1,23 +1,25 @@
 <?php
 include_once($viewVar['helper'].'/forms.php');
+$db=$viewVar['db'];
+
 $sql="SELECT * FROM countries";
-$result=query($viewVar['link'], $sql);
-$htmlCountries=htmlSelectFromDB('country', 'idcountries', 'country', $result, $viewVar['datos']);
+$result=$db->query($sql);
+$htmlCountries=htmlSelectFromDB('country', 'idcountries', 'country', $result, $viewVar['datos'], $db);
 $sql="SELECT * FROM cities";
-$result=query($viewVar['link'], $sql);
-$htmlCities=htmlSelectFromDB('city', 'idcities', 'city', $result, $viewVar['datos']);
+$result=$db->query($sql);
+$htmlCities=htmlSelectFromDB('city', 'idcities', 'city', $result, $viewVar['datos'], $db);
 
 $sql="SELECT * FROM genders";
-$result=query($viewVar['link'], $sql);
-$htmlSexo=htmlRadioFromDB('gender', 'idgenders', 'gender', $result, $viewVar['datos']);
+$result=$db->query($sql);
+$htmlSexo=htmlRadioFromDB('gender', 'idgenders', 'gender', $result, $viewVar['datos'], $db);
 
 $sql="SELECT * FROM transports";
-$result=query($viewVar['link'], $sql);
-$htmlTransports=htmlSelectMultipleFromDB('transports', 'idtransports', 'transport', $result, $viewVar['datos']);
+$result=$db->query($sql);
+$htmlTransports=htmlSelectMultipleFromDB('transports', 'idtransports', 'transport', $result, $viewVar['datos'], $db);
 
 $sql="SELECT * FROM likes";
-$result=query($viewVar['link'], $sql);
-$htmlLikes=htmlCheckboxFromDB('likes', 'idlikes', 'like', $result, $viewVar['datos']);
+$result=$db->query($sql);
+$htmlLikes=htmlCheckboxFromDB('likes', 'idlikes', 'like', $result, $viewVar['datos'],$db);
 
 
 ?>

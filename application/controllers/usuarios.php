@@ -11,80 +11,108 @@
 /**
  * Incluir librerias 
  */
-require_once ($config['models']."/usuarios.php");
+require_once ($_SESSION['config']['models']."/usuarios.php");
 
-/**
- * Settings iniciales 
- */
-$datos=initUserData();
-
-/**
- * Inicializacion de variables 
- */
-$usuario='';
-$content='';
-$route=route('usuarios', 'select');     
-
-/**
- * Parametrizar 
- */
-
-/**
- * Procesar 
- */
-$link=connectDBServer($config);
-switch($route['action'])
+class usuariosController
 {
-    case 'delete':
-        if (isset($_POST['usuario']))
-        {
-            // Procesar formulario de insert            
-            if ($_POST['delete']=='Si')
-                procesarDelete($config['usersUploadDirectory']."/images", $config);
-            header("Location: ?controller=usuarios&action=select"); 
-            break;
-        }
-        else
-        {
-            $usuarios=readUserById($link, $_GET['usuario']);
-            $viewVar=array('usuarios'=>$usuarios,'helper'=>$config['helpers']);     
-        }
-    break;    
-    case 'update':       
-        if (isset($_POST['usuario']))
-        {
-            // Procesar formulario de insert            
-            procesarUpdate($config['usersUploadDirectory']."/images", $config);
-            header("Location: ?controller=usuarios&action=select"); 
-            break;
-        }
-        else
-        {
-            $datos=readUserData($link, $config['usersUploadDirectory']."/images");
-        }        
-    case 'insert':
-        // Si POST          
-        if (isset($_POST['usuario']))
-        {
-            // Procesar formulario de insert
-            procesar($config['usersUploadDirectory']."/images", $config);
-            header("Location: ?controller=usuarios&action=select");            
-        }
-        else
-        {
-            //Mostrar formulario
-            $viewVar=array('usuario'=>'','datos'=>$datos,'link'=>$link,'helper'=>$config['helpers']);           
-        }                             
-    break;
-    case 'select':
-    default:   
-        $usuarios=readUsers($link);
-        $viewVar=array('usuarios'=>$usuarios,'helper'=>$config['helpers']);
-    break;
+	public $db='';
+	public $usuario='';
+	public $content='';
+	public $route=''; 
+	public $datos='';
+	public $viewVar='';
+	
+	public function __construct()
+	{
+		$this -> db = new dbConnect($_SESSION['config']['db']);
+		$obj = mvc::getInstance();
+// 		$this -> route = $obj->setRoute('usuarios', 'select');
+		$this -> route = $obj->getRoute();	
+		$this -> _init();		
+		return;
+	}
+	
+	public function __destruct()
+	{
+		
+// 		echo $this->render();
+// 		echo "caca";
+	}
+	
+	/**
+	 * Inicializacion de variables
+	 */
+	protected function _init()
+	{
+		$this->datos = usuariosModel::initUserData();
+		$this->{$this->route['action']."Action"}();
+		echo $this->render();
+		return;
+	}
+	
+	public function selectAction()
+	{
+		$usuarios=usuariosModel::readUsers($this->db);
+		$this->viewVar=array('usuarios'=>$usuarios,'helper'=>$_SESSION['config']['helpers']);
+		return;
+	}
+	
+	public function insertAction()
+	{
+		if (isset($_POST['usuario']))
+		{
+			// Procesar formulario de insert
+			usuariosModel::procesar($this->db, $_SESSION['config']['usersUploadDirectory']."/images");
+			header("Location: ?controller=usuarios&action=select");
+		}
+		else
+		{
+			//Mostrar formulario
+			$this->viewVar=array('usuario'=>'','datos'=>$this->datos,'db'=>$this->db,'helper'=>$_SESSION['config']['helpers']);
+		}
+	}
+	public function updateAction()
+	{
+		if (isset($_POST['usuario']))
+		{
+			// Procesar formulario de insert
+			usuariosModel::procesarUpdate($this->db, $_SESSION['config']['usersUploadDirectory']."/images");			
+			header("Location: ?controller=usuarios&action=select");
+		}
+		else
+		{
+			$this->datos=usuariosModel::readUserData($this->db, $_SESSION['config']['usersUploadDirectory']."/images");
+			$this->viewVar=array('usuario'=>$_GET['usuario'],'datos'=>$this->datos,'db'=>$this->db,'helper'=>$_SESSION['config']['helpers']);
+		}
+	}
+	public function deleteAction()
+	{
+		if (isset($_POST['usuario']))
+		{
+			// Procesar formulario de insert
+			if ($_POST['delete']=='Si')
+				usuariosModel::procesarDelete($this->db, $_SESSION['config']['usersUploadDirectory']."/images");
+			header("Location: ?controller=usuarios&action=select");
+		}
+		else
+		{
+			$usuarios=usuariosModel::readUserById($this->db, $_GET['usuario']);
+			$this->viewVar=array('usuarios'=>$usuarios,'helper'=>$_SESSION['config']['helpers']);
+		}
+	}
+	
+	
+	/**
+	 * Mostrar
+	 */	
+	public function render()
+	{
+		$content=views::view($this->viewVar, $_SESSION['config']['views'].'/'.$this->route['controller'].'/'.$this->route['action'].'.phtml');
+		$this->db->disconnectDBServer();
+		return $content;
+	}
 }
-/**
- * Mostrar 
- */
-$content=view($viewVar, $config['views'].'/'.$route['controller'].'/'.$route['action'].'.phtml');
-disconnectDBServer($link);
+
+
+
 ?>
