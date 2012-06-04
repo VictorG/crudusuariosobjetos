@@ -1,0 +1,34 @@
+<?="<?xml version=\"1.0\" encoding=\"UTF-8\"?>";?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </head>
+    <body>
+        <div>Formulario de Login</div>
+        <div>
+        <form action="?controller=auth&action=login" method="POST"
+              enctype="multipart/form-data">
+            <ul>                
+                                
+                <li>
+                    contraseña: 
+                    <input name="password"  type="password" maxlength="10" size="50"/>
+                </li>               
+                
+                <li>
+                    email: 
+                     <input name="email"  type="text" maxlength="255" size="50" value="<?=$viewVar['datos']['email']?>"/>
+                </li>               
+               
+                <li>
+                    Enviar:
+                    <input type="submit" value="Enviar" name="sub"/>
+                </li>
+             
+            </ul>
+        </form>
+        </div>
+    </body>
+</html>
